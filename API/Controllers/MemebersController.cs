@@ -5,9 +5,7 @@ using Microsoft.EntityFrameworkCore; // Agregado para ToListAsync
 
 namespace API.Controllers;
 
-[Route("api/[controller]")] // https://localhost:5001/api/members
-[ApiController]
-public class MembersController(AppDbContext context) : ControllerBase
+public class MembersController(AppDbContext context) : BaseAPIController
 {
   [HttpGet]
   public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
