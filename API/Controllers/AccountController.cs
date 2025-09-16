@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(AppDbContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(AppDbContext context, ITokenService tokenService) : BaseAPIController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)

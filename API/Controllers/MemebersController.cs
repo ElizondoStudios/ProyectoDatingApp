@@ -2,6 +2,7 @@ using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Agregado para ToListAsync
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
