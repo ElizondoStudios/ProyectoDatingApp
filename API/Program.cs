@@ -1,5 +1,6 @@
 using API.Data;
 using Microsoft.EntityFrameworkCore;
+using API.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ app.UseCors(x => x.AllowAnyHeader()
         "http://localhost:4200",
         "https://localhost:4200"
     ));
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 app.MapControllers();
 
