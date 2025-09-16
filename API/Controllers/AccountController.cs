@@ -3,55 +3,68 @@ using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(AppDbContext context) : BaseApiController
+public class AccountController(AppDbContext context, ITokenService tokenService) : BaseApiController
 {
-  [HttpPost("register")]
-  public async Task<ActionResult<AppUser>> Register(RegisterRequest request)
-  {
-    if (await EmailExists(request.Email)) return BadRequest("Email is already in use");
-
-    using var hmac = new HMACSHA512();
-
-    var user = new AppUser
+    [HttpPost("register")]
+    public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
     {
-      DisplayName = request.DisplayName,
-      Email = request.Email,
-      PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
-      PasswordSalt = hmac.Key
-    };
+        if (await EmailExists(request.Email)) return BadRequest("Email is already in use");
 
-    context.Users.Add(user);
-    await context.SaveChangesAsync();
+        using var hmac = new HMACSHA512();
 
-    return user;
-  }
+        var user = new AppUser
+        {
+            DisplayName = request.DisplayName,
+            Email = request.Email,
+            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
+            PasswordSalt = hmac.Key
+        };
 
-  [HttpPost("login")]
-  public async Task<ActionResult<AppUser>> Login(LoginRequest request)
-  {
-    var user = await context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
 
-    if (user == null) return Unauthorized("Invalid email or password");
-
-    using var hmac = new HMACSHA512(user.PasswordSalt);
-
-    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
-
-    for (var i = 0; i < computedHash.Length; i++)
-    {
-      if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid email or password");
+        return new UserResponse
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Email = user.Email,
+            Token = tokenService.CreateToken(user)
+        };
     }
 
-    return user;
-  }
+    [HttpPost("login")]
+    public async Task<ActionResult<UserResponse>> Login(LoginRequest request)
+    {
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
 
-  private async Task<bool> EmailExists(string email)
-  {
-    return await context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower());
-  }
+        if (user == null) return Unauthorized("Invalid email or password");
+
+        using var hmac = new HMACSHA512(user.PasswordSalt);
+
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
+
+        for (var i = 0; i < computedHash.Length; i++)
+        {
+            if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid email or password");
+        }
+
+        return new UserResponse
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Email = user.Email,
+            Token = tokenService.CreateToken(user)
+        };
+    } 
+
+    private async Task<bool> EmailExists(string email)
+    {
+        return await context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower());
+    }
 }
