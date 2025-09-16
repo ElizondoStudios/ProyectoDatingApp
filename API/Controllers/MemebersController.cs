@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore; // Agregado para ToListAsync
 
 namespace API.Controllers;
 
+[Authorize]
 public class MembersController(AppDbContext context) : BaseAPIController
 {
   [HttpGet]
@@ -15,6 +16,7 @@ public class MembersController(AppDbContext context) : BaseAPIController
     return members;
   }
 
+  [AllowAnonymous]
   [HttpGet("{id}")] // https://localhost:5001/api/members/bob-id
   public async Task<ActionResult<AppUser>> GetMember(string id)
   {
