@@ -10,7 +10,7 @@ import { RegisterCreds } from '../../types/registerCreds';
 export class AccountService {
   private http = inject(HttpClient);
   currentUser = signal<User | null>(null);
-  baseUrl = "https://localhost:5180/api/";
+  baseUrl = "http://localhost:5180/api/";
 
   register(creds: RegisterCreds): Observable<User> {
     return this.http.post<User>(this.baseUrl + "account/register", creds).pipe(
