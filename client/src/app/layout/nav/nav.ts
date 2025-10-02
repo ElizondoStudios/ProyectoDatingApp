@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../../core/services/account-service';
 import { RouterModule, Router } from '@angular/router';
-import { RouterUpgradeInitializer } from '@angular/router/upgrade';
+import { ToastService } from '../../../core/services/toast-service';
 
 @Component({
   selector: 'app-nav',
@@ -11,17 +11,21 @@ import { RouterUpgradeInitializer } from '@angular/router/upgrade';
   styleUrl: './nav.css'
 })
 export class Nav {
+  private router = inject(Router);
+  private toast = inject(ToastService);
   protected accountService = inject(AccountService);
   protected creds: any = {};
-  protected router = inject(Router);
 
   login(): void {
     this.accountService.login(this.creds).subscribe({
       next: response => {
         this.router.navigateByUrl("/members");
         this.creds = {};
+        this.toast.success("Logged in!")
       },
-      error: error => alert(error.message)
+      error: error => {
+        this.toast.error(error.error);
+      }
     });
   }
 
