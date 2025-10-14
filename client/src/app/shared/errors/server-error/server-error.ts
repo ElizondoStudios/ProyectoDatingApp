@@ -6,7 +6,7 @@ import { ApiError } from '../../../../types/error';
   selector: 'app-server-error',
   imports: [],
   templateUrl: './server-error.html',
-  styleUrl: './server-error.css'
+  styleUrl: './server-error.css',
 })
 export class ServerError {
   private router = inject(Router);
@@ -15,7 +15,7 @@ export class ServerError {
 
   constructor() {
     const navigation = this.router.currentNavigation();
-    this.error = navigation?.extras?.state?.["error"];
+    this.error.set(navigation?.extras?.state?.['error']);
   }
 
   detailsToggle() {
