@@ -65,3 +65,6 @@ ScaffoldingReadMe.txt
 # Entity Framework
 *.edmx.diagram
 *.edmx.sql
+
+# DB
+/API/*.db
