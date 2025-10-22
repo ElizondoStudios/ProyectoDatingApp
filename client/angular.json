@@ -5,7 +5,20 @@
   "projects": {
     "client": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:service": {
+          "skipTests": false,
+          "path": "src/core/services"
+        },
+        "@schematics/angular:guard": {
+          "skipTests": false,
+          "path": "src/core/guard"
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": false,
+          "path": "src/core/interceptors"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
