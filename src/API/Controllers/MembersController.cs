@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Agregado para ToListAsync
 using Microsoft.AspNetCore.Authorization;
 using API.Interfaces;
+using API.Mappers;
 
 namespace API.Controllers;
 
@@ -11,21 +12,24 @@ namespace API.Controllers;
 public class MembersController(IMembersRepository membersRepository) : BaseAPIController
 {
   [HttpGet]
-  public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
-  {
-    var members = await membersRepository.GetMembersAsync();
+    public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
+    {
+        return Ok(await membersRepository.GetMembersAsync());
+    }
 
-    return Ok(members);
-  }
+    [HttpGet("{id}")] // https://localhost:5001/api/members/bob-id
+    public async Task<ActionResult<Member>> GetMember(string id)
+    {
+        var member = await membersRepository.GetMemberAsync(id);
 
-  [AllowAnonymous]
-  [HttpGet("{id}")] // https://localhost:5001/api/members/bob-id
-  public async Task<ActionResult<Member>> GetMember(string id)
-  {
-    var member = await membersRepository.GetMemberAsync(id);
+        if (member == null) return NotFound();
 
-    if (member == null) return NotFound();
+        return member.ToResponse();
+    }
 
-    return Ok(member);
-  }
+    [HttpGet("{id}/photos")]
+    public async Task<ActionResult<IReadOnlyList<Photo>>> GetPhotos(string id)
+    {
+        return Ok(await membersRepository.GetPhotosAsync(id));
+    }
 }
