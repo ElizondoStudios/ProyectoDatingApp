@@ -68,3 +68,6 @@ ScaffoldingReadMe.txt
 
 # DB
 /API/*.db
+tests/API.UnitTests/coveragereport/
+
+tests/API.UnitTests/TestResults/
